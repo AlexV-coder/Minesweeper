@@ -248,7 +248,27 @@ def uncoverBoard(x, y):
 
 
 def rightClick(event):
-    pass
+    global game
+    global first_square
+    if game and not first_square:
+        y = root.winfo_pointerx() - root.winfo_rootx()
+        x = root.winfo_pointery() - root.winfo_rooty() - 150
+        if x > 0 and y > 0:
+            y = y // 25
+            x = x // 25
+            if playerBoard[x][y] == -1:
+                canvas = tk.Canvas(width=23,
+                                   height=23,
+                                   master=event.widget,
+                                   bd=0,
+                                   highlightthickness=0)
+                canvas.create_image(0, 0, image=images[-1], anchor=NW)
+                canvas.pack(expand=YES, fill=BOTH)
+                playerBoard[x][y] = -2
+            elif playerBoard[x][y] == -2:
+                playerBoard[x][y] = -1
+                for canvas in frames[x][y].winfo_children():
+                    canvas.destroy()
 
 
 root.protocol("WM_DELETE_WINDOW", on_closing)
