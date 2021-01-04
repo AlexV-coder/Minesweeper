@@ -17,6 +17,8 @@ playerBoard = [[-1 for x in range(size)] for y in range(size)]
 game = False
 root = tk.Tk()
 frames = []
+timer = 30
+game_nr = 0
 first_square = False
 
 
@@ -25,6 +27,43 @@ def on_closing():
     global root
     game = False
     root.destroy()
+
+
+def thread_function(t, nr):
+    global game
+    global root
+    global size
+    global game_nr
+
+    local_nr = nr
+    time_label = tk.Label(root)
+    time_label.place(x=size * 25 / 2 - 35 / 2, y=100, width=35, height=25)
+    while t and game_nr == local_nr and game:
+        mins, secs = divmod(t, 60)
+        timer = '{:02d}:{:02d}'.format(mins, secs)
+        try:
+            time_label.config(text=timer)
+        except:
+            continue
+        time.sleep(1)
+        t -= 1
+    if game_nr == local_nr:
+        game = False
+        if t == 0:
+            mins, secs = divmod(t, 60)
+            timer = '{:02d}:{:02d}'.format(mins, secs)
+            try:
+                time_label.config(text=timer)
+            except:
+                pass
+            time.sleep(1)
+            t -= 1
+            timer = '{:02d}:{:02d}'.format(mins, secs)
+            try:
+                time_label.config(text=timer)
+            except:
+                pass
+            popup('You lost on time!')
 
 
 def initBoard(x, y):
@@ -158,15 +197,20 @@ def initGame():
     global size
     global root
     global nrOfBombs
+    global game_nr
     global first_square
 
     first_square = True
+    game_nr += 1
     game = False
     frames.clear()
     for child in root.winfo_children():
         child.destroy()
     initGUI()
     game = True
+    if timer != 0:
+        x = threading.Thread(target=thread_function, args=(timer, game_nr))
+        x.start()
 
 
 def leftClick(event):
@@ -247,22 +291,6 @@ def popup(msg):
     B1.pack()
     popup.mainloop()
 
-def callback1(size_str):
-    global size
-    if len(size_str.get()) > 1:
-        size = int(size_str.get())
-
-
-def callback2(mine_str):
-    global nrOfBombs
-    if len(mine_str.get()) > 0:
-        nrOfBombs = int(mine_str.get())
-
-
-def callback3(time_str):
-    global timer
-    if len(time_str.get()) > 0:
-        timer = int(time_str.get())
 
 def showBombs(x, y):
     for i in range(0, size):
@@ -331,6 +359,24 @@ def rightClick(event):
                 playerBoard[x][y] = -1
                 for canvas in frames[x][y].winfo_children():
                     canvas.destroy()
+
+
+def callback1(size_str):
+    global size
+    if len(size_str.get()) > 1:
+        size = int(size_str.get())
+
+
+def callback2(mine_str):
+    global nrOfBombs
+    if len(mine_str.get()) > 0:
+        nrOfBombs = int(mine_str.get())
+
+
+def callback3(time_str):
+    global timer
+    if len(time_str.get()) > 0:
+        timer = int(time_str.get())
 
 
 root.protocol("WM_DELETE_WINDOW", on_closing)
