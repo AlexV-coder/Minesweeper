@@ -72,6 +72,52 @@ def initGUI():
     global frames
     center_frame = tk.Frame(root, width=25 * size, height=25 * size)
     upper_frame = tk.Frame(root, width=25 * size, height=150, bg='grey65')
+
+    mine_str = StringVar()
+    mine_str.trace(
+        "w", lambda name, index, mode, mine_str=mine_str: callback2(mine_str))
+
+    mine_label = tk.Label(upper_frame, text="Mines")
+    mine_entry = tk.Entry(upper_frame, textvariable=mine_str)
+    mine_label.place(x=(size * 25) / 2 - 35 / 2 - 90,
+                     y=60,
+                     width=35,
+                     height=25)
+    mine_entry.place(x=(size * 25) / 2 - 35 / 2 - 40,
+                     y=60,
+                     width=35,
+                     height=25)
+
+    size_str = StringVar()
+    size_str.trace(
+        "w", lambda name, index, mode, size_str=size_str: callback1(size_str))
+
+    size_label = tk.Label(upper_frame, text="Size")
+    size_entry = tk.Entry(upper_frame, textvariable=size_str)
+    size_label.place(x=(size * 25) / 2 - 35 / 2 + 40,
+                     y=60,
+                     width=35,
+                     height=25)
+    size_entry.place(x=(size * 25) / 2 - 35 / 2 + 90,
+                     y=60,
+                     width=35,
+                     height=25)
+
+    time_str = StringVar()
+    time_str.trace(
+        "w", lambda name, index, mode, time_str=time_str: callback3(time_str))
+
+    time_label = tk.Label(upper_frame, text="Time")
+    time_entry = tk.Entry(upper_frame, textvariable=time_str)
+    time_label.place(x=(size * 25) / 2 - 35 / 2 - 90,
+                     y=100,
+                     width=35,
+                     height=25)
+    time_entry.place(x=(size * 25) / 2 - 35 / 2 - 40,
+                     y=100,
+                     width=35,
+                     height=25)
+
     start_btn = tk.Button(upper_frame, command=initGame, text="New Game")
     start_btn.place(x=(25 * size) / 2 - 35, y=10, width=70, height=25)
 
@@ -201,6 +247,22 @@ def popup(msg):
     B1.pack()
     popup.mainloop()
 
+def callback1(size_str):
+    global size
+    if len(size_str.get()) > 1:
+        size = int(size_str.get())
+
+
+def callback2(mine_str):
+    global nrOfBombs
+    if len(mine_str.get()) > 0:
+        nrOfBombs = int(mine_str.get())
+
+
+def callback3(time_str):
+    global timer
+    if len(time_str.get()) > 0:
+        timer = int(time_str.get())
 
 def showBombs(x, y):
     for i in range(0, size):
