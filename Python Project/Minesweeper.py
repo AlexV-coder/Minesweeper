@@ -10,10 +10,11 @@ from tkinter import *
 import threading
 
 images = []
-size = 10
+size1 = 10
+size2 = 10
 nrOfBombs = 25
-board = [[0 for x in range(size)] for y in range(size)]
-playerBoard = [[-1 for x in range(size)] for y in range(size)]
+board = [[0 for x in range(size2)] for y in range(size1)]
+playerBoard = [[-1 for x in range(size2)] for y in range(size1)]
 game = False
 root = tk.Tk()
 frames = []
@@ -32,12 +33,13 @@ def on_closing():
 def thread_function(t, nr):
     global game
     global root
-    global size
+    global size1
+    global size2
     global game_nr
 
     local_nr = nr
     time_label = tk.Label(root)
-    time_label.place(x=size * 25 / 2 - 35 / 2, y=100, width=35, height=25)
+    time_label.place(x=size2 * 25 / 2 - 35 / 2, y=100, width=35, height=25)
     while t and game_nr == local_nr and game:
         mins, secs = divmod(t, 60)
         timer = '{:02d}:{:02d}'.format(mins, secs)
@@ -71,21 +73,22 @@ def initBoard(x, y):
     y = y // 25
     global board
     global playerBoard
-    global size
+    global size1
+    global size2
     global nrOfBombs
 
-    if nrOfBombs >= size * size:
-        nrOfBombs = size * size - 1
+    if nrOfBombs >= size1 * size2:
+        nrOfBombs = size1 * size2 - 1
 
-    board = [[0 for x in range(size)] for y in range(size)]
-    playerBoard = [[-1 for x in range(size)] for y in range(size)]
-    nrOfSquares = size * size
+    board = [[0 for x in range(size2)] for y in range(size1)]
+    playerBoard = [[-1 for x in range(size2)] for y in range(size1)]
+    nrOfSquares = size1 * size2
     placedBombs = 0
     chanceToPlaceBomb = nrOfBombs / nrOfSquares
     ok = True
-    for i in range(size):
+    for i in range(size1):
         if ok:
-            for j in range(size):
+            for j in range(size2):
                 if ok:
                     if board[i][j] == 0 and (i != x or j != y):
                         randNum = random.random()
@@ -99,8 +102,8 @@ def initBoard(x, y):
         else:
             break
     while placedBombs != nrOfBombs:
-        row = random.randint(0, size - 1)
-        col = random.randint(0, size - 1)
+        row = random.randint(0, size1 - 1)
+        col = random.randint(0, size2 - 1)
         if board[row][col] == 0 and (row != x or col != y):
             board[row][col] = -1
             placedBombs += 1
@@ -109,8 +112,9 @@ def initBoard(x, y):
 def initGUI():
     global root
     global frames
-    center_frame = tk.Frame(root, width=25 * size, height=25 * size)
-    upper_frame = tk.Frame(root, width=25 * size, height=150, bg='grey65')
+    global size2
+    center_frame = tk.Frame(root, width=25 * size2, height=25 * size2)
+    upper_frame = tk.Frame(root, width=25 * size2, height=150, bg='grey65')
 
     mine_str = StringVar()
     mine_str.trace(
@@ -118,53 +122,64 @@ def initGUI():
 
     mine_label = tk.Label(upper_frame, text="Mines")
     mine_entry = tk.Entry(upper_frame, textvariable=mine_str)
-    mine_label.place(x=(size * 25) / 2 - 35 / 2 - 90,
+    mine_label.place(x=(size2 * 25) / 2 - 35 / 2 - 90,
                      y=60,
                      width=35,
                      height=25)
-    mine_entry.place(x=(size * 25) / 2 - 35 / 2 - 40,
+    mine_entry.place(x=(size2 * 25) / 2 - 35 / 2 - 40,
                      y=60,
                      width=35,
                      height=25)
 
-    size_str = StringVar()
-    size_str.trace(
-        "w", lambda name, index, mode, size_str=size_str: callback1(size_str))
+    size1_str = StringVar()
+    size1_str.trace(
+        "w", lambda name, index, mode, size_str=size1_str: callback11(size1_str))
 
     size_label = tk.Label(upper_frame, text="Size")
-    size_entry = tk.Entry(upper_frame, textvariable=size_str)
-    size_label.place(x=(size * 25) / 2 - 35 / 2 + 40,
+    size1_entry = tk.Entry(upper_frame, textvariable=size1_str)
+    size_label.place(x=(size2 * 25) / 2 - 100 / 2 + 40,
                      y=60,
                      width=35,
                      height=25)
-    size_entry.place(x=(size * 25) / 2 - 35 / 2 + 90,
+    size1_entry.place(x=(size2 * 25) / 2 - 100 / 2 + 90,
                      y=60,
                      width=35,
                      height=25)
 
+    ######
+    size2_str = StringVar()
+    size2_str.trace(
+        "w", lambda name, index, mode, size_str=size1_str: callback12(size2_str))
+    size2_entry = tk.Entry(upper_frame, textvariable=size2_str)
+    size2_entry.place(x=(size2 * 25) / 2 - 5 / 2 + 90,
+                     y=60,
+                     width=35,
+                     height=25)
+
+    #######
     time_str = StringVar()
     time_str.trace(
         "w", lambda name, index, mode, time_str=time_str: callback3(time_str))
 
     time_label = tk.Label(upper_frame, text="Time")
     time_entry = tk.Entry(upper_frame, textvariable=time_str)
-    time_label.place(x=(size * 25) / 2 - 35 / 2 - 90,
+    time_label.place(x=(size2 * 25) / 2 - 35 / 2 - 90,
                      y=100,
                      width=35,
                      height=25)
-    time_entry.place(x=(size * 25) / 2 - 35 / 2 - 40,
+    time_entry.place(x=(size2 * 25) / 2 - 35 / 2 - 40,
                      y=100,
                      width=35,
                      height=25)
 
     start_btn = tk.Button(upper_frame, command=initGame, text="New Game")
-    start_btn.place(x=(25 * size) / 2 - 35, y=10, width=70, height=25)
+    start_btn.place(x=(25 * size2) / 2 - 35, y=10, width=70, height=25)
 
     upper_frame.pack(side="top")
     center_frame.pack(side="bottom")
-    for i in range(size):
+    for i in range(size1):
         line_frames = []
-        for j in range(size):
+        for j in range(size2):
             frame = tk.Frame(center_frame,
                              width=25,
                              height=25,
@@ -194,7 +209,8 @@ def initGame():
     global board
     global playerBoard
     global frames
-    global size
+    global size1
+    global size2
     global root
     global nrOfBombs
     global game_nr
@@ -232,8 +248,8 @@ def leftClick(event):
                 for i in range(-1, 2):
                     for j in range(-1, 2):
                         if (i != 0 or
-                                j != 0) and (x + i >= 0 and x + i < size) and (
-                                    y + j >= 0) and (y + j < size):
+                                j != 0) and (x + i >= 0 and x + i < size1) and (
+                                    y + j >= 0) and (y + j < size2):
                             if board[x + i][y + j] == -1:
                                 adjBombs += 1
 
@@ -254,13 +270,13 @@ def leftClick(event):
                     for i in range(-1, 2):
                         for j in range(-1, 2):
                             if (i != 0 or j != 0) and (x + i >= 0) and (
-                                    x + i < size) and (y + j >= 0) and (y + j <
-                                                                        size):
+                                    x + i < size1) and (y + j >= 0) and (y + j <
+                                                                        size2):
                                 if playerBoard[x + i][y + j] == -1:
                                     uncoverBoard(x + i, y + j)
                 ok = True
-                for i in range(0, size):
-                    for j in range(0, size):
+                for i in range(0, size1):
+                    for j in range(0, size2):
                         if board[i][j] == 0 and playerBoard[i][j] < 0:
                             ok = False
                 if ok:
@@ -293,8 +309,8 @@ def popup(msg):
 
 
 def showBombs(x, y):
-    for i in range(0, size):
-        for j in range(0, size):
+    for i in range(0, size1):
+        for j in range(0, size2):
             if board[i][j] == -1 and (x != i or y != j):
                 if playerBoard[i][j] == -2:
                     for canvas in frames[i][j].winfo_children():
@@ -314,7 +330,7 @@ def uncoverBoard(x, y):
         for j in range(-1, 2):
             if (
                     i != 0 or j != 0
-            ) and x + i >= 0 and x + i < size and y + j >= 0 and y + j < size:
+            ) and x + i >= 0 and x + i < size1 and y + j >= 0 and y + j < size2:
                 if board[x + i][y + j] == -1:
                     adjBombs += 1
     if adjBombs != 0:
@@ -331,8 +347,8 @@ def uncoverBoard(x, y):
         playerBoard[x][y] = 0
         for i in range(-1, 2):
             for j in range(-1, 2):
-                if (i != 0 or j != 0) and (x + i >= 0) and (x + i < size) and (
-                        y + j >= 0) and (y + j < size):
+                if (i != 0 or j != 0) and (x + i >= 0) and (x + i < size1) and (
+                        y + j >= 0) and (y + j < size2):
                     if playerBoard[x + i][y + j] == -1:
                         uncoverBoard(x + i, y + j)
 
@@ -361,10 +377,15 @@ def rightClick(event):
                     canvas.destroy()
 
 
-def callback1(size_str):
-    global size
-    if len(size_str.get()) > 1:
-        size = int(size_str.get())
+def callback11(size1_str):
+    global size1
+    if len(size1_str.get()) > 1:
+        size1 = int(size1_str.get())
+
+def callback12(size2_str):
+    global size2
+    if len(size2_str.get()) > 1:
+        size2 = int(size2_str.get())
 
 
 def callback2(mine_str):
