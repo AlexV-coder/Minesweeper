@@ -133,7 +133,8 @@ def initGUI():
 
     size1_str = StringVar()
     size1_str.trace(
-        "w", lambda name, index, mode, size_str=size1_str: callback11(size1_str))
+        "w", lambda name, index,
+        mode, size_str=size1_str: callback11(size1_str))
 
     size_label = tk.Label(upper_frame, text="Size")
     size1_entry = tk.Entry(upper_frame, textvariable=size1_str)
@@ -142,19 +143,20 @@ def initGUI():
                      width=35,
                      height=25)
     size1_entry.place(x=(size2 * 25) / 2 - 100 / 2 + 90,
-                     y=60,
-                     width=35,
-                     height=25)
+                      y=60,
+                      width=35,
+                      height=25)
 
     ######
     size2_str = StringVar()
     size2_str.trace(
-        "w", lambda name, index, mode, size_str=size1_str: callback12(size2_str))
+        "w", lambda name, index,
+        mode, size_str=size1_str: callback12(size2_str))
     size2_entry = tk.Entry(upper_frame, textvariable=size2_str)
     size2_entry.place(x=(size2 * 25) / 2 - 5 / 2 + 90,
-                     y=60,
-                     width=35,
-                     height=25)
+                      y=60,
+                      width=35,
+                      height=25)
 
     #######
     time_str = StringVar()
@@ -247,11 +249,11 @@ def leftClick(event):
                 adjBombs = 0
                 for i in range(-1, 2):
                     for j in range(-1, 2):
-                        if (i != 0 or
-                                j != 0) and (x + i >= 0 and x + i < size1) and (
-                                    y + j >= 0) and (y + j < size2):
-                            if board[x + i][y + j] == -1:
-                                adjBombs += 1
+                        if i != 0 or j != 0:
+                            if x + i >= 0 and x + i < size1:
+                                if y + j >= 0 and y + j < size2:
+                                    if board[x + i][y + j] == -1:
+                                        adjBombs += 1
 
                 if adjBombs != 0:
                     playerBoard[x][y] = adjBombs
@@ -269,11 +271,11 @@ def leftClick(event):
                     playerBoard[x][y] = 0
                     for i in range(-1, 2):
                         for j in range(-1, 2):
-                            if (i != 0 or j != 0) and (x + i >= 0) and (
-                                    x + i < size1) and (y + j >= 0) and (y + j <
-                                                                        size2):
-                                if playerBoard[x + i][y + j] == -1:
-                                    uncoverBoard(x + i, y + j)
+                            if i != 0 or j != 0:
+                                if (x + i >= 0) and (x + i < size1):
+                                    if (y + j >= 0) and (y + j < size2):
+                                        if playerBoard[x + i][y + j] == -1:
+                                            uncoverBoard(x + i, y + j)
                 ok = True
                 for i in range(0, size1):
                     for j in range(0, size2):
@@ -328,11 +330,11 @@ def uncoverBoard(x, y):
     adjBombs = 0
     for i in range(-1, 2):
         for j in range(-1, 2):
-            if (
-                    i != 0 or j != 0
-            ) and x + i >= 0 and x + i < size1 and y + j >= 0 and y + j < size2:
-                if board[x + i][y + j] == -1:
-                    adjBombs += 1
+            if i != 0 or j != 0:
+                if x + i >= 0 and x + i < size1:
+                    if y + j >= 0 and y + j < size2:
+                        if board[x + i][y + j] == -1:
+                            adjBombs += 1
     if adjBombs != 0:
         playerBoard[x][y] = adjBombs
         canvas = tk.Canvas(width=23,
@@ -347,10 +349,11 @@ def uncoverBoard(x, y):
         playerBoard[x][y] = 0
         for i in range(-1, 2):
             for j in range(-1, 2):
-                if (i != 0 or j != 0) and (x + i >= 0) and (x + i < size1) and (
-                        y + j >= 0) and (y + j < size2):
-                    if playerBoard[x + i][y + j] == -1:
-                        uncoverBoard(x + i, y + j)
+                if i != 0 or j != 0:
+                    if (x + i >= 0) and (x + i < size1):
+                        if y + j >= 0 and y + j < size2:
+                            if playerBoard[x + i][y + j] == -1:
+                                uncoverBoard(x + i, y + j)
 
 
 def rightClick(event):
@@ -379,25 +382,30 @@ def rightClick(event):
 
 def callback11(size1_str):
     global size1
-    if len(size1_str.get()) > 1:
-        size1 = int(size1_str.get())
+    if size1_str.get().isnumeric() and int(size1_str.get()) <= 30:
+        if len(size1_str.get()) > 1:
+            size1 = int(size1_str.get())
+
 
 def callback12(size2_str):
     global size2
-    if len(size2_str.get()) > 1:
-        size2 = int(size2_str.get())
+    if size2_str.get().isnumeric() and int(size2_str.get()) <= 30:
+        if len(size2_str.get()) > 1:
+            size2 = int(size2_str.get())
 
 
 def callback2(mine_str):
     global nrOfBombs
-    if len(mine_str.get()) > 0:
-        nrOfBombs = int(mine_str.get())
+    if mine_str.get().isnumeric():
+        if len(mine_str.get()) > 0:
+            nrOfBombs = int(mine_str.get())
 
 
 def callback3(time_str):
     global timer
-    if len(time_str.get()) > 0:
-        timer = int(time_str.get())
+    if time_str.get().isnumeric():
+        if len(time_str.get()) > 0:
+            timer = int(time_str.get())
 
 
 root.protocol("WM_DELETE_WINDOW", on_closing)
