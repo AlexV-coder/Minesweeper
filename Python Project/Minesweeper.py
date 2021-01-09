@@ -24,6 +24,10 @@ first_square = False
 
 
 def on_closing():
+    """
+    A function that is called when pressing the close button.
+    It sets a boolean variable on False so that every open thread closes.
+    """
     global game
     global root
     game = False
@@ -31,6 +35,23 @@ def on_closing():
 
 
 def thread_function(t, nr):
+    """
+    This function is a thread function.
+    If the user sets a timer value other than 0, a new thread will open,
+    and using this function it will keep track of the time passed since
+    the start of the game. If the time runs out before the user
+    wins/loses the game, a pop-up will show up,
+    informing the user that he lost and a boolean variable will
+    be set to False so that the user will no longer
+    be able to click on the board,
+    and will have to start a new game.
+    If the user starts a new game before the current one finishes
+    and therefore this thread is no longer needed, a global value
+    will be incremented and when this function will check that
+    this variable has been changed, comparing it to a local variable
+    that wasn't changed globally,
+    the function whill break out of the loop and finish.
+    """
     global game
     global root
     global size1
@@ -69,6 +90,31 @@ def thread_function(t, nr):
 
 
 def initBoard(x, y):
+    """
+    This function initialises the player board, and the game board.
+    The game board is a matrix of 0's and -1's, -1 meaning a bomb
+    and 0 not a bomb. The player board is a matrix of what the player
+    currently sees on the board, which squares are covered, which
+    squares have been uncovered(clicked), squares that have been
+    flagged as bombs and squares that show the number of bombs
+    next to them(a number from 1 to 8).
+
+    The function also places the bombs on the board in a randomly manner.
+    Firstly, it calculates the chance for a bomb to be placed on a square.
+    That chance will be equal to nrOfBombs / nrOfSquares.
+    Afterwards, it iterates through the board,
+    and generates a random number between 0 and 1 for each square.
+    If the generated number is smaller than the chance to place,
+    a bomb will be placed on that square.
+    The loop will stop if all the bombs have been placed before the
+    iteration through the board ends. If by the end of the iteration,
+    there still remain bombs to be placed, random squares will be chosen
+    and the bombs will be placed on them, until all bombs have been placed.
+
+    The function takes x, y as parameters,
+    which are indexes of the first square the user has pressed on.
+    The function needs these so that it doesn't place a bomb on that square.
+    """
     x = x // 25
     y = y // 25
     global board
@@ -110,6 +156,11 @@ def initBoard(x, y):
 
 
 def initGUI():
+    """
+    This function sets up all the GUI elements the user will need.
+    These include the board and the entry fields for the sizes,
+    the time and the number of bombs.
+    """
     global root
     global frames
     global size2
@@ -194,6 +245,9 @@ def initGUI():
 
 
 def loadImages():
+    """
+    Loads the images the application will need.
+    """
     images.append(PhotoImage(file='1.png'))
     images.append(PhotoImage(file='2.png'))
     images.append(PhotoImage(file='3.png'))
@@ -207,6 +261,12 @@ def loadImages():
 
 
 def initGame():
+    """
+    Called when pressing the start button,
+    this function resets all the variables to their initial values,
+    before the game has started.
+    It also calls the initGUI() function and starts the timer thread if needed.
+    """
     global game
     global board
     global playerBoard
@@ -232,6 +292,23 @@ def initGame():
 
 
 def leftClick(event):
+    """
+    Called when pressing left click,
+    the function identifies whether or not the player has pressed on a square.
+    If the answers is yes, it checks different things such as:
+      - if the pressed square is flagged, nothing will happen,
+      the user has to unflag it with right click
+
+      - if the pressed square is a bomb, the player loses,
+      a pop-up message will appear, and the showBombs() function will be called
+
+      - if the pressed square is clear, but it has adjacent bombs,
+      it will display the number of adjacent bombs
+
+      - if the pressed square is clear and it doesn't have adjacent bombs,
+      it will call a recursive function that uncovers all the
+      adjecent squares which don't have bombs next to them
+    """
     global game
     global first_square
 
@@ -298,6 +375,10 @@ def leftClick(event):
 
 
 def popup(msg):
+    """
+    A function that is called when the game finishes.
+    It can show when the player wins, clicks on a bomb or loses on time.
+    """
     global root
     popup = tk.Tk()
     popup.geometry('%dx%d+%d+%d' %
@@ -311,6 +392,10 @@ def popup(msg):
 
 
 def showBombs(x, y):
+    """
+    This function is called when the player clicks on a bomb.
+    In that moment the position of all the bombs will be shown to the player.
+    """
     for i in range(0, size1):
         for j in range(0, size2):
             if board[i][j] == -1 and (x != i or y != j):
@@ -327,6 +412,14 @@ def showBombs(x, y):
 
 
 def uncoverBoard(x, y):
+    """
+    This is the recursive function that is called on every neighbour
+    of a square that doesn't have any adjcent bombs.
+    If the square at x, y doesn't have an adjcent bomb,
+    then the recursive function will be called on its neighbours as well.
+    If it does, then the number of adjcent bombs will be displayed
+    and no recursive call will be made.
+    """
     adjBombs = 0
     for i in range(-1, 2):
         for j in range(-1, 2):
@@ -357,6 +450,14 @@ def uncoverBoard(x, y):
 
 
 def rightClick(event):
+    """
+    This function is called when pressing the right click.
+    If the square pressed is already flagged, it will un-flag it.
+    If it isn't flagged, it will flag it.
+    Flagged squares will be ignored in the recursive
+    proccess of uncovering squares,
+    since it is presumably a bomb.
+    """
     global game
     global first_square
     if game and not first_square:
@@ -381,6 +482,11 @@ def rightClick(event):
 
 
 def callback11(size1_str):
+    """
+    This function keeps track of the input in the size1 text field.
+    It updates the variable size1 if certain conditions are met.
+    This variable will be used when pressing the 'New Game' button.
+    """
     global size1
     if size1_str.get().isnumeric() and int(size1_str.get()) <= 30:
         if len(size1_str.get()) > 1:
@@ -388,6 +494,11 @@ def callback11(size1_str):
 
 
 def callback12(size2_str):
+    """
+    This function keeps track of the input in the size2 text field.
+    It updates the variable size2 if certain conditions are met.
+    This variable will be used when pressing the 'New Game' button.
+    """
     global size2
     if size2_str.get().isnumeric() and int(size2_str.get()) <= 30:
         if len(size2_str.get()) > 1:
@@ -395,6 +506,11 @@ def callback12(size2_str):
 
 
 def callback2(mine_str):
+    """
+    This function keeps track of the input in nrOfBombs text field.
+    It updates the variable nrOfBombs if certain conditions are met.
+    This variable will be used when pressing the 'New Game' button.
+    """
     global nrOfBombs
     if mine_str.get().isnumeric():
         if len(mine_str.get()) > 0:
@@ -402,6 +518,11 @@ def callback2(mine_str):
 
 
 def callback3(time_str):
+    """
+    This function keeps track of the input in timer text field.
+    It updates the variable timer if certain conditions are met.
+    This variable will be used when pressing the 'New Game' button.
+    """
     global timer
     if time_str.get().isnumeric():
         if len(time_str.get()) > 0:
