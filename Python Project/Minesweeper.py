@@ -51,6 +51,9 @@ def thread_function(t, nr):
     this variable has been changed, comparing it to a local variable
     that wasn't changed globally,
     the function whill break out of the loop and finish.
+    Args:
+        t (int): The timer value in seconds.
+        nr (int): The number of the game the user has started.
     """
     global game
     global root
@@ -114,6 +117,9 @@ def initBoard(x, y):
     The function takes x, y as parameters,
     which are indexes of the first square the user has pressed on.
     The function needs these so that it doesn't place a bomb on that square.
+    Args:
+        x (int): The X coordinate of the mouse when clicked.
+        y (int): The Y coordinate of the mouse when clicked.
     """
     x = x // 25
     y = y // 25
@@ -308,10 +314,11 @@ def leftClick(event):
       - if the pressed square is clear and it doesn't have adjacent bombs,
       it will call a recursive function that uncovers all the
       adjecent squares which don't have bombs next to them
+    Args:
+        event (tkinter.Event): The event given by the GUI library.
     """
     global game
     global first_square
-
     if game:
         y = root.winfo_pointerx() - root.winfo_rootx()
         x = root.winfo_pointery() - root.winfo_rooty() - 150
@@ -378,6 +385,8 @@ def popup(msg):
     """
     A function that is called when the game finishes.
     It can show when the player wins, clicks on a bomb or loses on time.
+    Args:
+        msg (string): The string that will be displayed on the pop-up.
     """
     global root
     popup = tk.Tk()
@@ -395,6 +404,10 @@ def showBombs(x, y):
     """
     This function is called when the player clicks on a bomb.
     In that moment the position of all the bombs will be shown to the player.
+    Args:
+        x (int): The row number of the clicked square.
+        y (int): The column number of the clicked square.
+
     """
     for i in range(0, size1):
         for j in range(0, size2):
@@ -419,6 +432,9 @@ def uncoverBoard(x, y):
     then the recursive function will be called on its neighbours as well.
     If it does, then the number of adjcent bombs will be displayed
     and no recursive call will be made.
+    Args:
+        x (int): The row number of the clicked square.
+        y (int): The column number of the clicked square.
     """
     adjBombs = 0
     for i in range(-1, 2):
@@ -457,6 +473,8 @@ def rightClick(event):
     Flagged squares will be ignored in the recursive
     proccess of uncovering squares,
     since it is presumably a bomb.
+    Args:
+        event (tkinter.Event): The event given by the GUI library.
     """
     global game
     global first_square
@@ -486,6 +504,8 @@ def callback11(size1_str):
     This function keeps track of the input in the size1 text field.
     It updates the variable size1 if certain conditions are met.
     This variable will be used when pressing the 'New Game' button.
+    Args:
+        size1_str (StringVar): The value typed in the respective entry field.
     """
     global size1
     if size1_str.get().isnumeric() and int(size1_str.get()) <= 30:
@@ -498,6 +518,8 @@ def callback12(size2_str):
     This function keeps track of the input in the size2 text field.
     It updates the variable size2 if certain conditions are met.
     This variable will be used when pressing the 'New Game' button.
+    Args:
+        size2_str (StringVar): The value typed in the respective entry field.
     """
     global size2
     if size2_str.get().isnumeric() and int(size2_str.get()) <= 30:
@@ -510,6 +532,8 @@ def callback2(mine_str):
     This function keeps track of the input in nrOfBombs text field.
     It updates the variable nrOfBombs if certain conditions are met.
     This variable will be used when pressing the 'New Game' button.
+    Args:
+        mine_str (StringVar): The value typed in the respective entry field.
     """
     global nrOfBombs
     if mine_str.get().isnumeric():
@@ -522,6 +546,8 @@ def callback3(time_str):
     This function keeps track of the input in timer text field.
     It updates the variable timer if certain conditions are met.
     This variable will be used when pressing the 'New Game' button.
+    Args:
+        time_str (StringVar): The value typed in the respective entry field.
     """
     global timer
     if time_str.get().isnumeric():
